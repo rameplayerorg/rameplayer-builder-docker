@@ -67,4 +67,4 @@ RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cd ~/rameplayer
 # Install rameplayer-keys package
 RUN ["/usr/bin/qemu-arm-static", "/sbin/apk", "--update", "add", "rameplayer-keys"]
 
-CMD ["/bin/sh"]
+CMD ["/bin/sh", "-c", "echo 'Build repo is cloned to ~/rameplayer-alpine' ; echo 'Start building: ./build.sh' ; echo 'You have sudo rights.' ; cd /home/rame/rameplayer-alpine ; su rame"]
