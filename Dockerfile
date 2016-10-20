@@ -42,29 +42,26 @@ RUN ["/usr/bin/qemu-arm-static", "/bin/sed", "-i", "-e", "s/:in\\/nologin/:\\/bi
 # Grant user sudo rights
 RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "echo 'rame ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"]
 
-# Generate alpine build keys for rame user
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'abuild-keygen -a -i'"]
-
 # Clone building repo
 RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cd && git clone https://github.com/rameplayerorg/rameplayer-alpine.git'"]
 
 # Create symbolic link for build.sh
 RUN ["/usr/bin/qemu-arm-static", "/bin/ln", "-s", "/home/rame/rameplayer-alpine/rame.modules", "/etc/mkinitfs/features.d/"]
 
-# Change builder key to rameplayer-keys package
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "rm /home/rame/rameplayer-alpine/ramepkg/rameplayer-keys/*.pub"]
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cp ~/.abuild/rame-*.rsa.pub ~/rameplayer-alpine/ramepkg/rameplayer-keys/'"]
+# Environment variables to be used in docker-entrypoint.sh
+ENV BUILD_USER rame
+ENV KEYS_DIR /home/${BUILD_USER}/.abuild
+ENV BUILD_REPO_DIR /home/${BUILD_USER}/rameplayer-alpine
+ENV IMAGE_DIR /rame
 
-# Replace generated key file in source line in APKBUILD
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cd ~/rameplayer-alpine/ramepkg/rameplayer-keys/ ; KEYFILE=`ls rame-*pub` ; sed -i -e s/source=\\.\\*/source=\\\"$KEYFILE\\\"/g APKBUILD'"]
+# Mount points, image will be written to /image, .abuild contains packager keys
+VOLUME ["/image", "/home/rame/.abuild"]
 
-# Refresh checksums in APKBUILD file
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cd ~/rameplayer-alpine/ramepkg/rameplayer-keys ; abuild -F checksum'"]
+# Entrypoint script as guided in
+# https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#/entrypoint
+COPY docker-entrypoint.sh /
 
-# Build rameplayer-keys package
-RUN ["/usr/bin/qemu-arm-static", "/bin/sh", "-c", "su rame - -c 'cd ~/rameplayer-alpine/ramepkg/rameplayer-keys ; abuild'"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
-# Install rameplayer-keys package
-RUN ["/usr/bin/qemu-arm-static", "/sbin/apk", "--update", "add", "rameplayer-keys"]
-
-CMD ["/bin/sh", "-c", "echo 'Build repo is cloned to ~/rameplayer-alpine' ; echo 'Start building: ./build.sh' ; echo 'You have sudo rights.' ; cd /home/rame/rameplayer-alpine ; su rame"]
+# open shell by default if no arguments given
+CMD ["/bin/ash"]
