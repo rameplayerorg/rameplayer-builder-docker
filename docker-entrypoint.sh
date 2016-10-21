@@ -26,10 +26,7 @@ if [ "$1" = 'build' ]; then
 	cp $KEYS_DIR/*.rsa.pub /etc/apk/keys
 
 	exec su rame << 'EOF'
-	# pull newest version from build repo
 	cd $BUILD_REPO_DIR
-	echo "Updating rameplayer-alpine from GitHub..."
-	git pull
 
 	echo "Inserting keys to rameplayer-keys package and installing it..."
 
