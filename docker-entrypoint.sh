@@ -16,16 +16,19 @@ if [ "$1" = 'build' ]; then
 	fi
 	if [ $KEYS == "0" ]; then
 		# generate new keys
-		chown rame:rame $KEYS_DIR
+		chown $BUILD_USER:$BUILD_USER $KEYS_DIR
 		echo "Generating new packager keys..."
 		su rame - -c "abuild-keygen -a"
 	fi
+
+	echo "Setting permissions for image directory..."
+	chown $BUILD_USER:$BUILD_USER $IMAGE_DIR
 
 	# install public key
 	echo "Installing keys to /etc/apk/keys..."
 	cp $KEYS_DIR/*.rsa.pub /etc/apk/keys
 
-	exec su rame << 'EOF'
+	exec su $BUILD_USER << 'EOF'
 	cd $BUILD_REPO_DIR
 
 	echo "Inserting keys to rameplayer-keys package and installing it..."
@@ -54,8 +57,8 @@ EOF
 
 elif [ "$1" = 'keygen' ]; then
 	# generate new keys
-	chown rame:rame $KEYS_DIR
-	exec su rame - -c "abuild-keygen -a"
+	chown $BUILD_USER:$BUILD_USER $KEYS_DIR
+	exec su $BUILD_USER - -c "abuild-keygen -a"
 fi
 
 # just exec anything user gave as argument
