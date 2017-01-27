@@ -62,4 +62,9 @@ elif [ "$1" = 'keygen' ]; then
 fi
 
 # just exec anything user gave as argument
+echo "Quick tip:"
+echo "# su rame"
+echo "# cd ~/rameplayer-alpine/"
+echo ""
+echo "See examples: https://hub.docker.com/r/rameplayerorg/rameplayer-builder/"
 exec "$@"
