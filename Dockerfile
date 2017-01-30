@@ -33,6 +33,9 @@ RUN ["/usr/bin/qemu-arm-static", "/sbin/apk", "--update", "add", \
     "kmod", \
     "linux-headers"]
 
+# Use patched Alpine packager, supports local archives
+COPY abuild /usr/bin/
+
 # Add user to abuild group
 RUN ["/usr/bin/qemu-arm-static", "/usr/sbin/addgroup", "rame", "abuild"]
 
@@ -55,7 +58,7 @@ ENV BUILD_REPO_DIR /home/${BUILD_USER}/rameplayer-alpine
 ENV IMAGE_DIR /rame
 
 # Mount points, image will be written to /image, .abuild contains packager keys
-VOLUME ["/image", "/home/rame/.abuild"]
+VOLUME ["/rame", "/home/rame/.abuild"]
 
 # Entrypoint script as guided in
 # https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#/entrypoint
