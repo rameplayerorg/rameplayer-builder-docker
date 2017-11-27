@@ -64,6 +64,9 @@ VOLUME ["/rame", "/home/rame/.abuild"]
 # https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/#/entrypoint
 COPY docker-entrypoint.sh /
 
+# Copy helper script for key install
+COPY install-keys.sh /
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # open shell by default if no arguments given
