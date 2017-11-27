@@ -33,9 +33,6 @@ RUN ["/usr/bin/qemu-arm-static", "/sbin/apk", "--update", "add", \
     "kmod", \
     "linux-headers"]
 
-# Use patched Alpine packager, supports local archives
-COPY abuild /usr/bin/
-
 # Add user to abuild group
 RUN ["/usr/bin/qemu-arm-static", "/usr/sbin/addgroup", "rame", "abuild"]
 
